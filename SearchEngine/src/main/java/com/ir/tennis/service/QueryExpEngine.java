@@ -14,12 +14,20 @@ public class QueryExpEngine {
 	private static final Logger logger = Logger.getLogger(QueryExpEngine.class);
 
 	@Autowired
+	QERocchioScheme rocchio;
+
+	@Autowired
 	QEAssociationCluster associationCluster;
 
+	@Autowired
+	QEMetricCluster metricCluster;
+
 	public Query expand(final Query query, String opt) {
-		QEScheme scheme = associationCluster;
+		QEScheme scheme = rocchio;
 		if (opt.equals(associationCluster.getName()))
 			scheme = associationCluster;
+		else if (opt.equals(metricCluster.getName()))
+			scheme = metricCluster;
 
 		logger.info("Starting " + opt + " for " + query);
 		return scheme.expand(query);

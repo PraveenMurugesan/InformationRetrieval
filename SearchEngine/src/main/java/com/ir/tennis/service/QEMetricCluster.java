@@ -1,6 +1,7 @@
 package com.ir.tennis.service;
 
 import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -8,7 +9,6 @@ import java.util.StringJoiner;
 
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
 
 import com.ir.tennis.model.Document;
 import com.ir.tennis.model.Query;
@@ -18,10 +18,9 @@ import com.ir.tennis.util.Counter;
 /**
  * @author giridar
  */
-@Service
-public class QEAssociationCluster implements QEScheme {
-	private static final Logger logger = Logger.getLogger(QEAssociationCluster.class);
-	String name = "AssociatonCluster";
+public class QEMetricCluster implements QEScheme {
+	private static final Logger logger = Logger.getLogger(QEMetricCluster.class);
+	String name = "MetricCluster";
 
 	@Autowired
 	QueryEngine queryEngine;
@@ -45,37 +44,51 @@ public class QEAssociationCluster implements QEScheme {
 		Result result = queryEngine.executeQuery(query);
 		query.setRows(rows);
 
-		/* Create Association matrix for query terms */
-		Map<String, Counter<String>> queryAssocVectors = new HashMap<>();
+		/* Create Metric matrix for query terms */
+		Map<String, Counter<String>> queryMetricVectors = new HashMap<>();
 		for (String term : query.getQuery().split(" "))
-			if (!queryAssocVectors.containsKey(term))
-				queryAssocVectors.put(term, new Counter<>(new HashMap<>()));
+			if (!queryMetricVectors.containsKey(term))
+				queryMetricVectors.put(term, new Counter<>(new HashMap<>()));
 
 		/* Calculate correlation values for all (query term, doc term) pairs */
-		Counter<String> docVector = new Counter<>(new HashMap<>());
+		Map<String, List<Integer>> termIndices = new HashMap<>();
 		for (Document doc : result.getDocuments()) {
-			/* Count frequencies of all terms in the document */
+			/* Record indices of all terms in the document */
 			List<String> tokens = documentProcessor.getTokens(doc.getContent());
 			logger.debug("Tokens of " + doc.getUrl() + ": " + tokens);
-			docVector.addAll(tokens);
+			int i = 0;
+			for (String dTerm : tokens) {
+				List<Integer> dTermIndices = termIndices.get(dTerm);
+				if (dTermIndices == null) {
+					dTermIndices = new LinkedList<>();
+					termIndices.put(dTerm, dTermIndices);
+				}
+				dTermIndices.add(i++);
+			}
 
 			/* Calculate correlation values for this document */
-			for (Entry<String, Counter<String>> queryAssocEntry : queryAssocVectors.entrySet()) {
-				Counter<String> queryAssocVector = queryAssocEntry.getValue();
-				Float qCount = docVector.get(queryAssocEntry.getKey());
-				if (qCount != 0) {
-					for (Entry<String, Float> docEntry : docVector.entrySet())
-						queryAssocVector.add(docEntry.getKey(), docEntry.getValue() * qCount);
+			for (Entry<String, Counter<String>> queryMetricEntry : queryMetricVectors.entrySet()) {
+				Counter<String> queryMetricVector = queryMetricEntry.getValue();
+				List<Integer> qIndices = termIndices.get(queryMetricEntry.getKey());
+				if (qIndices != null) {
+					for (Entry<String, List<Integer>> docEntry : termIndices.entrySet()) {
+						/* Calculate only for non-query terms */
+						if (!queryMetricVectors.containsKey(docEntry.getKey())) {
+							float metricCorrelation = 0;
+							for (int dIndex : docEntry.getValue())
+								for (int qIndex : qIndices)
+									metricCorrelation += ((float) 1) / Math.abs(dIndex - qIndex);
+							queryMetricVector.add(docEntry.getKey(), metricCorrelation);
+						}
+					}
 				}
 			}
-			docVector.clear();
+			termIndices.clear();
 		}
-
-		/* TODO: Normalization */
 
 		/* Pick top K neighbors (doc terms) for every query term */
 		StringJoiner expandedQueryBuilder = new StringJoiner(" ");
-		for (Entry<String, Counter<String>> queryAssocEntry : queryAssocVectors.entrySet()) {
+		for (Entry<String, Counter<String>> queryAssocEntry : queryMetricVectors.entrySet()) {
 			expandedQueryBuilder.add(queryAssocEntry.getKey());
 			List<Entry<String, Float>> expandedTerms = queryAssocEntry.getValue().top(qeConfig.clusterSize);
 			logger.info("New query terms for '" + queryAssocEntry.getKey() + "': " + expandedTerms);

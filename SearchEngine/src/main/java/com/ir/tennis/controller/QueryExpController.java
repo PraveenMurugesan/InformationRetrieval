@@ -22,7 +22,7 @@ public class QueryExpController {
 	QueryEngine queryEngine;
 
 	@RequestMapping("/expand")
-	public Result run(@RequestParam(value = "opt", defaultValue = "AssociationCluster") String opt, Query query) {
+	public Result run(@RequestParam(value = "opt", defaultValue = "Rocchio") String opt, Query query) {
 		return queryEngine.executeQuery(queryExpEngine.expand(query, opt));
 	}
 }

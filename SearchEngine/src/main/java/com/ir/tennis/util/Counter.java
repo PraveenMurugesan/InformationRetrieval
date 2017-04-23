@@ -1,7 +1,10 @@
 package com.ir.tennis.util;
 
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
 import java.util.Map;
+import java.util.PriorityQueue;
 import java.util.Set;
 
 /**
@@ -9,19 +12,41 @@ import java.util.Set;
  * 
  * @author giridar
  */
-public class Counter<K> implements Map<K, Integer> {
-	private Map<K, Integer> map;
+public class Counter<K> implements Map<K, Float> {
+	private Map<K, Float> map;
 
-	public Counter(Map<K, Integer> map) {
+	public Counter(Map<K, Float> map) {
 		this.map = map;
 	}
 
 	public void add(K key) {
-		map.merge(key, 1, Integer::sum);
+		map.merge(key, 1f, Float::sum);
 	}
 
-	public void add(K key, int count) {
-		map.merge(key, count, Integer::sum);
+	public void add(K key, float count) {
+		map.merge(key, count, Float::sum);
+	}
+
+	public void addAll(Collection<K> c) {
+		for (K key : c)
+			map.merge(key, 1f, Float::sum);
+	}
+
+	public List<Entry<K, Float>> top(int k) {
+		PriorityQueue<Entry<K, Float>> pq = new PriorityQueue<>(k, (e1, e2) -> e1.getValue().compareTo(e2.getValue()));
+		for (Entry<K, Float> entry : entrySet()) {
+			if (pq.size() < k) {
+				pq.offer(entry);
+			} else if (entry.getValue() > pq.peek().getValue()) {
+				pq.poll();
+				pq.offer(entry);
+			}
+		}
+
+		List<Entry<K, Float>> topEntries = new ArrayList<Entry<K, Float>>(k);
+		while (!pq.isEmpty())
+			topEntries.add(pq.poll());
+		return topEntries;
 	}
 
 	@Override
@@ -40,13 +65,13 @@ public class Counter<K> implements Map<K, Integer> {
 	}
 
 	@Override
-	public Set<java.util.Map.Entry<K, Integer>> entrySet() {
+	public Set<java.util.Map.Entry<K, Float>> entrySet() {
 		return map.entrySet();
 	}
 
 	@Override
-	public Integer get(Object key) {
-		return map.get(key);
+	public Float get(Object key) {
+		return map.getOrDefault(key, 0f);
 	}
 
 	@Override
@@ -60,17 +85,17 @@ public class Counter<K> implements Map<K, Integer> {
 	}
 
 	@Override
-	public Integer put(K key, Integer value) {
+	public Float put(K key, Float value) {
 		return map.put(key, value);
 	}
 
 	@Override
-	public void putAll(Map<? extends K, ? extends Integer> m) {
+	public void putAll(Map<? extends K, ? extends Float> m) {
 		map.putAll(m);
 	}
 
 	@Override
-	public Integer remove(Object key) {
+	public Float remove(Object key) {
 		return map.remove(key);
 	}
 
@@ -80,7 +105,12 @@ public class Counter<K> implements Map<K, Integer> {
 	}
 
 	@Override
-	public Collection<Integer> values() {
+	public Collection<Float> values() {
 		return map.values();
+	}
+
+	@Override
+	public String toString() {
+		return "Counter [map=" + map + "]";
 	}
 }
