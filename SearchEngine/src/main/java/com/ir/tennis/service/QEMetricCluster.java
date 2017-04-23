@@ -1,14 +1,17 @@
 package com.ir.tennis.service;
 
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.Map.Entry;
 import java.util.StringJoiner;
 
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 import com.ir.tennis.model.Document;
 import com.ir.tennis.model.Query;
@@ -18,6 +21,7 @@ import com.ir.tennis.util.Counter;
 /**
  * @author giridar
  */
+@Service
 public class QEMetricCluster implements QEScheme {
 	private static final Logger logger = Logger.getLogger(QEMetricCluster.class);
 	String name = "MetricCluster";
@@ -88,13 +92,15 @@ public class QEMetricCluster implements QEScheme {
 
 		/* Pick top K neighbors (doc terms) for every query term */
 		StringJoiner expandedQueryBuilder = new StringJoiner(" ");
+		Set<String> expandedTerms = new HashSet<>();
 		for (Entry<String, Counter<String>> queryAssocEntry : queryMetricVectors.entrySet()) {
 			expandedQueryBuilder.add(queryAssocEntry.getKey());
-			List<Entry<String, Float>> expandedTerms = queryAssocEntry.getValue().top(qeConfig.clusterSize);
-			logger.info("New query terms for '" + queryAssocEntry.getKey() + "': " + expandedTerms);
-			for (Entry<String, Float> term : expandedTerms)
-				expandedQueryBuilder.add(term.getKey());
+			for (Entry<String, Float> term : queryAssocEntry.getValue().top(qeConfig.clusterSize))
+				expandedTerms.add(term.getKey());
 		}
+		logger.info("New query terms: " + expandedTerms);
+		for (String term : expandedTerms)
+			expandedQueryBuilder.add(term);
 		Query expandedQuery = query.clone();
 		expandedQuery.setQuery(expandedQueryBuilder.toString());
 		return expandedQuery;
