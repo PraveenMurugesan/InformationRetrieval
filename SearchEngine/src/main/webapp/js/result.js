@@ -2,18 +2,17 @@
  * Created by ram on 4/22/17.
  */
 
-var API_RELEVANCE_MODEL_SCORE = "query?order=SCORE";
-var API_RELEVANCE_MODEL_PAGERANK = "query?order=RANK_SCORE";
-var API_RELEVANCE_MODEL_HITS = "query?order=HIT_SCORE";
-var API_QUERY_EXPANSION_ROCCHIO = "expand?scheme=Rocchio";
-var API_QUERY_EXPANSION_ASSOCIATION = "expand?scheme=AssociationCluster";
-var API_QUERY_EXPANSION_METRICS = "expand?scheme=MetricCluster";
-var TEST_API="http://localhost:8080/tennis/test.json";
+var API_RELEVANCE_MODEL_SCORE = "query?order=score";
+var API_RELEVANCE_MODEL_PAGERANK = "query?order=rankScore";
+var API_RELEVANCE_MODEL_HITS = "query?order=hitScore";
+var API_QUERY_EXPANSION_ROCCHIO = "query?expand=Rocchio";
+var API_QUERY_EXPANSION_ASSOCIATION = "query?expand=AssociationCluster";
+var API_QUERY_EXPANSION_METRIC = "query?expand=MetricCluster";
 var BASE_URL = "http://localhost:8080/tennis/";
 
-//models
+// models
 var ROCCHIO="rocchio";
-var METRICS_CLUSTER="metrics_cluster";
+var METRIC_CLUSTER="metric_cluster";
 var ASSOCIATION_CLUSTER="association_cluster";
 var PAGERANK="pagerank";
 var HITS="hits";
@@ -27,7 +26,6 @@ $(function () {
     var model = getParameterByName("model");
 
     var OFFSET_URL=getOffsetURL(model);
-    //result=getSearchResults(TEST_API, query, 0, 10);
     getSearchResults(BASE_URL+OFFSET_URL, query, 0, 10);
 
 
@@ -39,7 +37,6 @@ $(function () {
         var start=this.name;
         var model = getParameterByName("model");
         var OFFSET_URL=getOffsetURL(model);
-        //result=getSearchResults(TEST_API, query, start, 10);
         getSearchResults(BASE_URL+OFFSET_URL, query, start, 10);
 
     });
@@ -62,8 +59,8 @@ function getOffsetURL(model) {
         case ROCCHIO:
             OFFSET_URL = API_QUERY_EXPANSION_ROCCHIO;
             break;
-        case METRICS_CLUSTER:
-            OFFSET_URL = API_QUERY_EXPANSION_METRICS;
+        case METRIC_CLUSTER:
+            OFFSET_URL = API_QUERY_EXPANSION_METRIC;
             break;
         case ASSOCIATION_CLUSTER:
             OFFSET_URL = API_QUERY_EXPANSION_ASSOCIATION;
@@ -103,9 +100,13 @@ function generateResult(json) {
     for(i=0; i<documents.length; i++) {
         htmlData += "<div class='entry'>";
         htmlData += "<div><a class='title' href="+documents[i].url+">"+documents[i].title+"</a></div>";
-        //htmlData += "<div class='url'>"+documents[i].url+"</div>";
+        // htmlData += "<div class='url'>"+documents[i].url+"</div>";
         htmlData += "<div class='url'>"+documents[i].url+"</div>";
-        //htmlData += "<div><a class='dropdown-toggle' data-toggle='dropdown' class='url'>"+documents[i].url+"<span class='caret'></span></a><ul class='dropdown-menu'><li><a href='#' name='similar'>similar</a></li><li><a href='#' name='moresimilar'>More similar</a></li></ul></div>";
+        // htmlData += "<div><a class='dropdown-toggle' data-toggle='dropdown'
+		// class='url'>"+documents[i].url+"<span class='caret'></span></a><ul
+		// class='dropdown-menu'><li><a href='#'
+		// name='similar'>similar</a></li><li><a href='#'
+		// name='moresimilar'>More similar</a></li></ul></div>";
         htmlData += "<div class='snippet'>"+documents[i].content.substr(0,170)+"...</div>";
         htmlData += "</div>";
     }
@@ -120,7 +121,7 @@ function generateFooter(start, count) {
     var htmlData = "<div class='footer'><ul class='pager'>";
     var prevLink="";
     var nextLink="";
-    //disable Prev link if current start is 0
+    // disable Prev link if current start is 0
     if(start == 0) {
         prevLink="<li><a name="+start+" class='previous' style='pointer-events: none; cursor:default; float: left'> Prev </a></li>";
     }

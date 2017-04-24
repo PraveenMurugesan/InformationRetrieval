@@ -7,7 +7,7 @@ public class Query {
 	private String query;
 	private int start;
 	private int rows;
-	private SortBy order;
+	private String order;
 
 	public Query() {
 	}
@@ -16,7 +16,7 @@ public class Query {
 		this.query = query;
 	}
 
-	public Query(String query, int start, int rows, SortBy order) {
+	public Query(String query, int start, int rows, String order) {
 		this.query = query;
 		this.start = start;
 		this.rows = rows;
@@ -47,11 +47,11 @@ public class Query {
 		this.rows = rows;
 	}
 
-	public SortBy getOrder() {
+	public String getOrder() {
 		return order;
 	}
 
-	public void setOrder(SortBy order) {
+	public void setOrder(String order) {
 		this.order = order;
 	}
 
@@ -62,9 +62,5 @@ public class Query {
 
 	public Query clone() {
 		return new Query(query, start, rows, order);
-	}
-
-	public static enum SortBy {
-		SCORE, RANK_SCORE, HIT_SCORE
 	}
 }

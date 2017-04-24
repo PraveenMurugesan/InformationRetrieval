@@ -57,21 +57,10 @@ public class QueryEngine {
 		solrQuery.setStart(query.getStart());
 		if (query.getRows() > 0)
 			solrQuery.setRows(query.getRows());
-		if (query.getOrder() != null) {
-			switch (query.getOrder()) {
-			case RANK_SCORE:
-				solrQuery.setSort("rankScore", ORDER.desc);
-				break;
-			case HIT_SCORE:
-				solrQuery.setSort("hitScore", ORDER.desc);
-				break;
-			default:
-				solrQuery.setSort("score", ORDER.desc);
-				break;
-			}
-		} else {
+		if (query.getOrder() != null)
+			solrQuery.setSort(query.getOrder(), ORDER.desc);
+		else
 			solrQuery.setSort("score", ORDER.desc);
-		}
 		return solrQuery;
 	}
 }
