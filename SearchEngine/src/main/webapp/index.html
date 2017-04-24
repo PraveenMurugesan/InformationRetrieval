@@ -1,80 +1,74 @@
 <!DOCTYPE html>
 <html>
 <head>
-<meta charset="utf-8">
-<title>Tennis Search Engine</title>
-<script src="js/jquery.min.js"></script>
-<script
-	src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
-<link
-	href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css"
-	rel="stylesheet">
-<link href="css/app.css" rel="stylesheet">
-<script src="js/app.js"></script>
+    <meta charset="utf-8">
+    <title>Tennis Search Engine</title>
+    <script src="js/jquery.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+    <link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet">
+    <link href="css/app.css" rel="stylesheet">
+    <script src="js/app.js"></script>
 
 </head>
 
 <body>
 
-	<div id="content">
-		<div class="row">
-			<div class="col-md-3">
-				<h3 style="text-align: right">Tennis Search Engine</h3>
-			</div>
-			<div class="col-md-6" style="margin-top: 20px">
-				<div class="input-group">
-					<input type="text" ng-model="query" id="search"
-						class="form-control input-md" placeholder="Type your search query"
-						autofocus /> <span class="input-group-btn">
-						<button class="btn btn-info btn-md" type="button"
-							onclick="loadResults()">
-							<i class="glyphicon glyphicon-search"></i>
-						</button>
-					</span>
-				</div>
-			</div>
-			<div class="col-md-3"></div>
-		</div>
-		<div>
-			<div class="row">
-				<div class="col-md-6" id="customMenu">
-					<ul class="nav nav-tabs" id="firstTab">
-						<li class="dropdown"><a class="dropdown-toggle"
-							data-toggle="dropdown">Relevance Model <span class="caret"></span></a>
-							<ul class="dropdown-menu">
-								<li><a href="#" name="score">Score</a></li>
-								<li><a href="#" name="pagerank">PageRank</a></li>
-								<li><a href="#" name="hits">Hits</a></li>
-							</ul></li>
-						<li class="dropdown"><a class="dropdown-toggle"
-							data-toggle="dropdown" href="#">Query Expansion <span
-								class="caret"></span></a>
-							<ul class="dropdown-menu">
-								<li><a href="#" name="rocchio">Rocchio</a></li>
-								<li><a href="#" name="association_cluster">Association
-										Cluster</a></li>
-								<li><a href="#" name="metric_cluster">Metric Cluster</a></li>
-							</ul></li>
-						<li><h4>
-								<div class="label label-primary" id="model"></div>
-							</h4></li>
-					</ul>
-				</div>
-				<div class="col-md-6">
-					<ul class="nav nav-tabs">
-						<li class="active"><a data-toggle="tab"
-							onclick="loadGooglePage()">Google</a></li>
-						<li><a data-toggle="tab" onclick="loadBingPage()">Bing</a></li>
-					</ul>
-				</div>
-			</div>
+<div id="content">
+    <div class="row">
+        <div class="col-md-3">
+            <h3 style="text-align: right">Tennis Search Engine</h3>
+        </div>
+        <div class="col-md-6" style="margin-top: 20px">
+            <div class="input-group" >
+                <input type="text" ng-model="query" id="search" class="form-control input-md" placeholder="Type your search query" autofocus/>
+                <span class="input-group-btn">
+                    <button class="btn btn-info btn-md" type="button" onclick="loadResults()">
+                        <i class="glyphicon glyphicon-search"></i>
+                    </button>
+                </span>
+            </div>
+        </div>
+        <div class="col-md-3"></div>
+    </div>
+    <div>
+        <div class="row">
+        <div class="col-md-6" id="customMenu">
+            <ul class="nav nav-tabs" id="firstTab">
+                <li class="dropdown" >
+                    <a class="dropdown-toggle" data-toggle="dropdown">Relevance Model
+                        <span class="caret"></span></a>
+                    <ul class="dropdown-menu">
+                        <li><a href="#" name="score">Score</a></li>
+                        <li><a href="#" name="pagerank">PageRank</a></li>
+                        <li><a href="#" name="hits">Hits</a></li>
+                    </ul>
+                </li>
+                <li class="dropdown">
+                    <a class="dropdown-toggle" data-toggle="dropdown" href="#">Query Expansion
+                        <span class="caret"></span></a>
+                    <ul class="dropdown-menu" >
+                        <li><a href="#" name="rocchio">Rocchio</a></li>
+                        <li><a href="#" name="association_cluster">Association Cluster</a></li>
+                        <li><a href="#" name="metric_cluster">Metric Cluster</a></li>
+                    </ul>
+                </li>
+                <li><h4><div class="label label-primary" id="model"></div></h4></li>
+            </ul>
+        </div>
+        <div class="col-md-6">
+            <ul class="nav nav-tabs">
+                <li class="active" ><a data-toggle="tab" onclick="loadGooglePage()" >Google</a></li>
+                <li><a data-toggle="tab" onclick="loadBingPage()">Bing</a></li>
+            </ul>
+        </div>
+        </div>
 
-		</div>
+    </div>
 
-		<iframe src="" width="48%" height="800px" id="customSearch">
-		</iframe>
-		<iframe src="" width="51%" height="800px" id="existingSearch"></iframe>
-	</div>
+    <iframe src="" width="48%" height="800px" id="customSearch">
+    </iframe>
+    <iframe src="" width="51%" height="800px" id="existingSearch"></iframe>
+</div>
 
 </body>
 </html>

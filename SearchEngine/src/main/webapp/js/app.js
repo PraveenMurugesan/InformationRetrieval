@@ -47,7 +47,7 @@ function loadCustomSearchPage(model) {
     var query=document.getElementById("search").value;
     var customSearch = document.getElementById('customSearch');
     if(query.length > 0 ) {
-        customSearch.src = "http://localhost:8080/tennis/result.html?q=" + query+"&model="+model;
+        customSearch.src = "http://localhost:8080/tennis/result.html?q=" + query+"&model="+model+"&start=0&rows=10";
     }
 }
 

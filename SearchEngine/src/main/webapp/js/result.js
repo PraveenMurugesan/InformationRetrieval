@@ -2,15 +2,17 @@
  * Created by ram on 4/22/17.
  */
 
+var API_CLUSTER = "cluster?";
 var API_RELEVANCE_MODEL_SCORE = "query?order=score";
 var API_RELEVANCE_MODEL_PAGERANK = "query?order=rankScore";
 var API_RELEVANCE_MODEL_HITS = "query?order=hitScore";
-var API_QUERY_EXPANSION_ROCCHIO = "query?expand=Rocchio";
-var API_QUERY_EXPANSION_ASSOCIATION = "query?expand=AssociationCluster";
-var API_QUERY_EXPANSION_METRIC = "query?expand=MetricCluster";
+var API_QUERY_EXPANSION_ROCCHIO = "query?scheme=Rocchio";
+var API_QUERY_EXPANSION_ASSOCIATION = "query?scheme=AssociationCluster";
+var API_QUERY_EXPANSION_METRIC = "query?scheme=MetricCluster";
+var TEST_API="http://localhost:8080/tennis/test.json";
 var BASE_URL = "http://localhost:8080/tennis/";
 
-// models
+//models
 var ROCCHIO="rocchio";
 var METRIC_CLUSTER="metric_cluster";
 var ASSOCIATION_CLUSTER="association_cluster";
@@ -24,26 +26,30 @@ $(function () {
 
     var query = getParameterByName("q");
     var model = getParameterByName("model");
+    var start= getParameterByName("start");
+    var rows= getParameterByName("rows");
 
     var OFFSET_URL=getOffsetURL(model);
-    getSearchResults(BASE_URL+OFFSET_URL, query, 0, 10);
-
-
-    $(".next").on('click', 'a', function (e) {
-
-        console.log("working");
-        e.preventDefault();
-        var query = getParameterByName("q");
-        var start=this.name;
-        var model = getParameterByName("model");
-        var OFFSET_URL=getOffsetURL(model);
-        getSearchResults(BASE_URL+OFFSET_URL, query, start, 10);
-
-    });
-
+    //result=getSearchResults(TEST_API, query, 0, 10);
+    getSearchResults(BASE_URL+OFFSET_URL, query, start, rows);
 
 });
 
+function getNextPage(start) {
+
+    var query = getParameterByName("q");
+    var model = getParameterByName("model");
+    var OFFSET_URL=getOffsetURL(model);
+    //result=getSearchResults(TEST_API, query, start, 10);
+    getSearchResults(BASE_URL+OFFSET_URL, query, start, 10);
+}
+
+function callClusterAPI(params) {
+
+    var query = getParameterByName("q");
+    console.log(BASE_URL+API_CLUSTER+params);
+    getSearchResults(BASE_URL+API_CLUSTER+params, query, 0, 10);
+}
 
 function getOffsetURL(model) {
 
@@ -79,11 +85,20 @@ function generateLabels(query) {
     console.log(tokens);
     var htmlData = "<ul id='labels'>";
     for( var index in tokens) {
-        htmlData += "<li><h5><span class='label label-info'>"+tokens[index]+"</span></h5></li>";
+        htmlData += "<li><h4><span class='label label-info'>"+tokens[index]+"</span></h4></li>";
     }
 
-    htmlData += "</ul>";
+    htmlData += "</ul><br/>";
     return htmlData;
+}
+
+function getContent(content) {
+
+    var text="";
+    if(content != null) {
+        text = content.substr(0,170);
+    }
+    return text;
 }
 
 function generateResult(json) {
@@ -96,19 +111,27 @@ function generateResult(json) {
     if(json.expandedQuery != undefined || json.expandedQuery != null) {
         htmlData += generateLabels(json.expandedQuery);
     }
+
     var documents = json.documents;
     for(i=0; i<documents.length; i++) {
         htmlData += "<div class='entry'>";
         htmlData += "<div><a class='title' href="+documents[i].url+">"+documents[i].title+"</a></div>";
-        // htmlData += "<div class='url'>"+documents[i].url+"</div>";
+        //htmlData += "<div class='url'>"+documents[i].url+"</div>";
         htmlData += "<div class='url'>"+documents[i].url+"</div>";
-        // htmlData += "<div><a class='dropdown-toggle' data-toggle='dropdown'
-		// class='url'>"+documents[i].url+"<span class='caret'></span></a><ul
-		// class='dropdown-menu'><li><a href='#'
-		// name='similar'>similar</a></li><li><a href='#'
-		// name='moresimilar'>More similar</a></li></ul></div>";
-        htmlData += "<div class='snippet'>"+documents[i].content.substr(0,170)+"...</div>";
-        htmlData += "</div>";
+        //htmlData += "<div><a class='dropdown-toggle' data-toggle='dropdown' class='url'>"+documents[i].url+"<span class='caret'></span></a><ul class='dropdown-menu'><li><a href='#' name='similar'>similar</a></li><li><a href='#' name='moresimilar'>More similar</a></li></ul></div>";
+        htmlData += "<div class='snippet'>"+ getContent(documents[i].content)+"...</div>";
+        htmlData += "<div class='clusterLinks'><ul>" +
+            "<li><a class='clusterlink' name=kClusterId="+documents[i].kClusterId+" onclick='callClusterAPI(this.name)' >similar</a></li>" +
+            "<li><a name=kClusterId="+documents[i].kClusterId+"&aggClusterId1="+documents[i].aggClusterId1+" onclick='callClusterAPI(this.name)' class='clusterlink'>complete linkage</a></li>" +
+            "<li><a name=kClusterId="+documents[i].kClusterId+"&aggClusterId2="+documents[i].aggClusterId2+" onclick='callClusterAPI(this.name)' class='clusterlink'>avg linkage</a></li>" +
+            "</ul></div>";
+        /*
+        htmlData += "<div class='clusterLinks'><ul>" +
+            "<li><a name=kClusterId=168 onclick='callClusterAPI(this.name)' class='clusterlink'>similar</a></li>" +
+            "<li><a name=kClusterId=168&aggClusterId1="+documents[i].aggClusterId1+" onclick='callClusterAPI(this.name)' class='clusterlink'>more similar (complete link)</a></li>" +
+            "<li><a name=kClusterId=168&aggClusterId2="+documents[i].aggClusterId2+" onclick='callClusterAPI(this.name)' class='clusterlink'>more similar (avg link)</a></li>" +
+            "</ul></div>";
+        htmlData += "</div>"; */
     }
     htmlData += "</div>";
 
@@ -119,21 +142,23 @@ function generateResult(json) {
 function generateFooter(start, count) {
 
     var htmlData = "<div class='footer'><ul class='pager'>";
+
     var prevLink="";
     var nextLink="";
-    // disable Prev link if current start is 0
-    if(start == 0) {
-        prevLink="<li><a name="+start+" class='previous' style='pointer-events: none; cursor:default; float: left'> Prev </a></li>";
+
+    //disable Prev link if current start is 0
+    if(parseInt(start,10) == 0) {
+        //prevLink="<li><a name="+start+" class='previous' style='pointer-events: none; cursor:default; float: left'> Prev </a></li>";
     }
     else {
-        prevLink="<li><a name="+start+"  class='previous' style='float: left'> Prev</a></li>";
+        prevLink="<li><a name="+(parseInt(start, 10)-10)+"  href='' class='previous' onclick='getNextPage(this.name)' style='float: left'> Prev</a></li>";
     }
 
     if(count < 10) {
-        nextLink="<li><a name="+(start+10)+" class='next'  style='pointer-events: none; cursor:default; float: right'> Next </a></li>";
+        //nextLink="<li><a name="+(start+10)+" class='next'  style='pointer-events: none; cursor:default; float: right'> Next </a></li>";
     }
     else {
-        nextLink="<li><a name="+(start+10)+" class='next' style='float: right;'> Next</a></li>";
+        nextLink="<li><a name="+(parseInt(start, 10)+10)+" href='' class='next' onclick='getNextPage(this.name)' style='float: right;'> Next</a></li>";
     }
 
     htmlData += prevLink+nextLink;
@@ -149,19 +174,18 @@ function getOptions(query, start, count) {
 
 function getSearchResults(url, query, start, count) {
 
-    console.log(url+getOptions(query, start, count));
-    var queryString=url+getOptions(query, start, count);
+    console.log(url + getOptions(query, start, count));
+    var queryString = url + getOptions(query, start, count);
 
     $.ajax({
         async: true,
         type: "GET",
         url: queryString,
         dataType: "json",
-        success : function(data) {
-            generateResultPage(data, start);
+        success: function (data) {
+            generateResultPage(start+count, data);
         }
     });
-
 }
 
 function getParameterByName(name) {
@@ -176,7 +200,7 @@ function getParameterByName(name) {
     return decodeURIComponent(results[2].replace(/\+/g, " "));
 }
 
-function generateResultPage(result, start) {
+function generateResultPage(start, result) {
 
     if(result != null && result != undefined && result.documents.length > 0) {
         console.log(result);
