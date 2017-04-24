@@ -45,12 +45,12 @@ public class QEMetricCluster implements QEScheme {
 		/* Fetch documents for the actual query */
 		int rows = query.getRows();
 		query.setRows(qeConfig.documentSetSize);
-		Result result = queryEngine.executeQuery(query);
+		Result result = queryEngine.execute(query);
 		query.setRows(rows);
 
 		/* Create Metric matrix for query terms */
 		Map<String, Counter<String>> queryMetricVectors = new HashMap<>();
-		for (String term : query.getQuery().split(" "))
+		for (String term : documentProcessor.getTokens(query.getQuery()))
 			if (!queryMetricVectors.containsKey(term))
 				queryMetricVectors.put(term, new Counter<>(new HashMap<>()));
 
@@ -92,12 +92,11 @@ public class QEMetricCluster implements QEScheme {
 
 		/* Pick top K neighbors (doc terms) for every query term */
 		StringJoiner expandedQueryBuilder = new StringJoiner(" ");
+		expandedQueryBuilder.add(query.getQuery());
 		Set<String> expandedTerms = new HashSet<>();
-		for (Entry<String, Counter<String>> queryAssocEntry : queryMetricVectors.entrySet()) {
-			expandedQueryBuilder.add(queryAssocEntry.getKey());
-			for (Entry<String, Float> term : queryAssocEntry.getValue().top(qeConfig.clusterSize))
+		for (Entry<String, Counter<String>> queryMetricEntry : queryMetricVectors.entrySet())
+			for (Entry<String, Float> term : queryMetricEntry.getValue().top(qeConfig.clusterSize))
 				expandedTerms.add(term.getKey());
-		}
 		logger.info("New query terms: " + expandedTerms);
 		for (String term : expandedTerms)
 			expandedQueryBuilder.add(term);

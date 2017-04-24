@@ -9,13 +9,17 @@ public class Document {
 	private String title;
 	private String url;
 	private String content;
-	private float score;
+	private int kClusterId;
+	private int aggClusterId1;
+	private int aggClusterId2;
 
 	public Document(SolrDocument document) {
 		this.title = (String) document.get("title");
 		this.url = (String) document.get("url");
 		this.content = (String) document.get("content");
-		this.score = (float) document.get("score");
+		this.kClusterId = (int) document.get("kClusterId");
+		this.aggClusterId1 = (int) document.get("aggClusterId1");
+		this.aggClusterId2 = (int) document.get("aggClusterId2");
 	}
 
 	public String getTitle() {
@@ -42,16 +46,33 @@ public class Document {
 		this.content = content;
 	}
 
-	public float getScore() {
-		return score;
+	public int getkClusterId() {
+		return kClusterId;
 	}
 
-	public void setScore(float score) {
-		this.score = score;
+	public void setkClusterId(int kClusterId) {
+		this.kClusterId = kClusterId;
+	}
+
+	public int getAggClusterId1() {
+		return aggClusterId1;
+	}
+
+	public void setAggClusterId1(int aggClusterId1) {
+		this.aggClusterId1 = aggClusterId1;
+	}
+
+	public int getAggClusterId2() {
+		return aggClusterId2;
+	}
+
+	public void setAggClusterId2(int aggClusterId2) {
+		this.aggClusterId2 = aggClusterId2;
 	}
 
 	@Override
 	public String toString() {
-		return "Document [title=" + title + ", url=" + url + ", content=" + content + ", score=" + score + "]";
+		return "Document [title=" + title + ", url=" + url + ", content=" + content + ", kClusterId=" + kClusterId
+				+ ", aggClusterId1=" + aggClusterId1 + ", aggClusterId2=" + aggClusterId2 + "]";
 	}
 }

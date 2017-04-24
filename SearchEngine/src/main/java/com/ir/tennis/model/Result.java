@@ -7,11 +7,19 @@ import java.util.List;
  */
 public class Result {
 	private Query query;
+	private String expandedQuery;
 	private long matches;
 	private List<Document> documents;
 
 	public Result(Query query, long matches, List<Document> documents) {
 		this.query = query;
+		this.matches = matches;
+		this.documents = documents;
+	}
+
+	public Result(Query query, String expandedQuery, long matches, List<Document> documents) {
+		this.query = query;
+		this.expandedQuery = expandedQuery;
 		this.matches = matches;
 		this.documents = documents;
 	}
@@ -24,12 +32,12 @@ public class Result {
 		this.query = query;
 	}
 
-	public List<Document> getDocuments() {
-		return documents;
+	public String getExpandedQuery() {
+		return expandedQuery;
 	}
 
-	public void setDocuments(List<Document> documents) {
-		this.documents = documents;
+	public void setExpandedQuery(String expandedQuery) {
+		this.expandedQuery = expandedQuery;
 	}
 
 	public long getMatches() {
@@ -38,6 +46,14 @@ public class Result {
 
 	public void setMatches(long matches) {
 		this.matches = matches;
+	}
+
+	public List<Document> getDocuments() {
+		return documents;
+	}
+
+	public void setDocuments(List<Document> documents) {
+		this.documents = documents;
 	}
 
 	@Override

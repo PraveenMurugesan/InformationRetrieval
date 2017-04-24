@@ -7,7 +7,6 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.ir.tennis.model.Query;
 import com.ir.tennis.model.Result;
-import com.ir.tennis.service.QueryEngine;
 import com.ir.tennis.service.QueryExpEngine;
 
 /**
@@ -18,11 +17,8 @@ public class QueryExpController {
 	@Autowired
 	QueryExpEngine queryExpEngine;
 
-	@Autowired
-	QueryEngine queryEngine;
-
 	@RequestMapping("/expand")
-	public Result run(@RequestParam(value = "opt", defaultValue = "Rocchio") String opt, Query query) {
-		return queryEngine.executeQuery(queryExpEngine.expand(query, opt));
+	public Result run(@RequestParam(value = "scheme", required = false) String scheme, Query query) {
+		return queryExpEngine.expand(query, scheme);
 	}
 }

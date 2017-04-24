@@ -28,7 +28,7 @@ public class QueryEngine {
 	@Autowired
 	SolrClient solrClient;
 
-	public Result executeQuery(Query query) {
+	public Result execute(Query query) {
 		List<Document> documents = new ArrayList<>();
 		Result result = new Result(query, 0, documents);
 		try {
@@ -53,11 +53,25 @@ public class QueryEngine {
 	private SolrQuery _getSolrQuery(Query query) {
 		SolrQuery solrQuery = new SolrQuery();
 		solrQuery.setQuery(query.getQuery());
+		solrQuery.setParam("fl", "title,url,content,kClusterId,aggClusterId1,aggClusterId2");
 		solrQuery.setStart(query.getStart());
 		if (query.getRows() > 0)
 			solrQuery.setRows(query.getRows());
-		solrQuery.setParam("fl", "title,url,content,score");
-		solrQuery.setSort("score", ORDER.desc);
+		if (query.getOrder() != null) {
+			switch (query.getOrder()) {
+			case RANK_SCORE:
+				solrQuery.setSort("rankScore", ORDER.desc);
+				break;
+			case HIT_SCORE:
+				solrQuery.setSort("hitScore", ORDER.desc);
+				break;
+			default:
+				solrQuery.setSort("score", ORDER.desc);
+				break;
+			}
+		} else {
+			solrQuery.setSort("score", ORDER.desc);
+		}
 		return solrQuery;
 	}
 }

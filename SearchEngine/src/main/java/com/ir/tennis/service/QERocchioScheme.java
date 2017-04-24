@@ -43,12 +43,12 @@ public class QERocchioScheme implements QEScheme {
 		/* Fetch documents for the actual query */
 		int rows = query.getRows();
 		query.setRows(qeConfig.documentSetSize);
-		Result result = queryEngine.executeQuery(query);
+		Result result = queryEngine.execute(query);
 		query.setRows(rows);
 
 		/* Original query vector */
 		Set<String> queryVector = new HashSet<>();
-		for (String term : query.getQuery().split(" "))
+		for (String term : documentProcessor.getTokens(query.getQuery()))
 			queryVector.add(term);
 
 		/*
@@ -66,8 +66,7 @@ public class QERocchioScheme implements QEScheme {
 
 		/* Pick top K dimensions (doc terms) from the optimal query vector */
 		StringJoiner expandedQueryBuilder = new StringJoiner(" ");
-		for (String term : queryVector)
-			expandedQueryBuilder.add(term);
+		expandedQueryBuilder.add(query.getQuery());
 		List<Entry<String, Float>> expandedTerms = optimalVector.top(queryVector.size() * qeConfig.clusterSize);
 		logger.info("New query terms: " + expandedTerms);
 		for (Entry<String, Float> term : expandedTerms)

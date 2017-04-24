@@ -18,6 +18,6 @@ public class QueryController {
 
 	@RequestMapping("/query")
 	public Result run(Query query) {
-		return queryEngine.executeQuery(query);
+		return queryEngine.execute(query);
 	}
 }

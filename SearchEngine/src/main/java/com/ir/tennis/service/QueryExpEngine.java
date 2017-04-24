@@ -5,6 +5,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.ir.tennis.model.Query;
+import com.ir.tennis.model.Result;
 
 /**
  * @author giridar
@@ -22,14 +23,20 @@ public class QueryExpEngine {
 	@Autowired
 	QEMetricCluster metricCluster;
 
-	public Query expand(final Query query, String opt) {
+	@Autowired
+	QueryEngine queryEngine;
+
+	public Result expand(Query query, String opt) {
 		QEScheme scheme = rocchio;
-		if (opt.equals(associationCluster.getName()))
+		if (associationCluster.getName().equals(opt))
 			scheme = associationCluster;
-		else if (opt.equals(metricCluster.getName()))
+		else if (metricCluster.getName().equals(opt))
 			scheme = metricCluster;
 
-		logger.info("Starting " + opt + " for " + query);
-		return scheme.expand(query);
+		logger.info("Starting " + scheme.getName() + " for " + query);
+		Query expandedQuery = scheme.expand(query);
+		Result result = queryEngine.execute(expandedQuery);
+		result.setExpandedQuery(expandedQuery.getQuery());
+		return result;
 	}
 }
