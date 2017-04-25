@@ -47,11 +47,15 @@ public class Main {
 		rankFilePath = args[1];
 		hitsFilePath = args[2];
 
+		System.out.println("Processing Rank file");
 		// process Rank file and load it to a hashMap
 		HashMap<String, Float> rankMap = processRankFile();
+		System.out.println("Finished processing Rank file");
 
-		// provess hit file and load it to load map
+		System.out.println("Constructing Web graph");
+		// process hit file and load it to load map
 		HashMap<String, Float> hitsMap = constructWebGraph();
+		System.out.println("Finished Web graph construction");
 
 		// find total count of documents in solr
 		long documentCount = getDocumentCount();
@@ -67,7 +71,8 @@ public class Main {
 			while (i < documentCount) {
 				solrQuery = new SolrQuery();
 				solrQuery.setQuery("*:*");
-				solrQuery.setParam("fl", "id,title,url,content,score,rankScore,kClusterId,aggClusterId1,aggClusterId2");
+				solrQuery.setParam("fl",
+						"id,title,url,content,tstamp,boost,segment,anchor,digest,rankScore,hitScore,kClusterId,aggClusterId1,aggClusterId2");
 				solrQuery.addSort("score", SolrQuery.ORDER.desc);
 				solrQuery.setStart(startIndex);
 				solrQuery.setRows(rowCount);
@@ -84,8 +89,12 @@ public class Main {
 					newDoc.addField("tstamp", solrDocument.getFieldValue("tstamp"));
 					newDoc.addField("segment", solrDocument.getFieldValue("segment"));
 					newDoc.addField("digest", solrDocument.getFieldValue("digest"));
+					newDoc.addField("anchor", solrDocument.getFieldValue("anchor"));
+					newDoc.addField("kClusterId", solrDocument.getFieldValue("kClusterId"));
+					newDoc.addField("aggClusterId1", solrDocument.getFieldValue("aggClusterId1"));
+					newDoc.addField("aggClusterId2", solrDocument.getFieldValue("aggClusterId2"));
 					newDoc.addField("rankScore", rankMap.getOrDefault(solrDocument.getFieldValue("id"), 0.00f));
-					newDoc.addField("hitsScore", hitsMap.getOrDefault(solrDocument.getFieldValue("id"), 0.00f));
+					newDoc.addField("hitScore", hitsMap.getOrDefault(solrDocument.getFieldValue("id"), 0.00f));
 					solrClient.add(newDoc);
 					i++;
 				}
