@@ -152,7 +152,7 @@ function generateFooter(start, count) {
         //prevLink="<li><a name="+start+" class='previous' style='pointer-events: none; cursor:default; float: left'> Prev </a></li>";
     }
     else {
-        prevLink="<li><a name="+(parseInt(start, 10)-10)+"  href='#' class='previous' onclick='getNextPage(this)' style='float: left'> Prev</a></li>";
+        prevLink="<li><a name="+(parseInt(start, 10)-10)+"  href='#' class='previous' onclick='getNextPage(this)' style='float: left;'> Prev</a></li>";
     }
 
     if(count < 10) {
