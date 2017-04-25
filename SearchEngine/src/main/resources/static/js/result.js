@@ -9,7 +9,7 @@ var API_RELEVANCE_MODEL_HITS = "query?order=hitScore";
 var API_QUERY_EXPANSION_ROCCHIO = "query?expand=Rocchio";
 var API_QUERY_EXPANSION_ASSOCIATION = "query?expand=AssociationCluster";
 var API_QUERY_EXPANSION_METRIC = "query?expand=MetricCluster";
-var BASE_URL = "http://52.38.140.41:8080/tennis/";
+var BASE_URL = "http://localhost:8080/tennis/";
 
 //models
 var ROCCHIO="rocchio";

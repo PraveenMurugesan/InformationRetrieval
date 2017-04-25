@@ -66,12 +66,12 @@ public class DocumentProcessor {
 				continue;
 
 			/* Lemmatize the token */
-			/*
-			 * String lemma = lemmatizer.lemmatize(token).get(0);
-			 * 
-			 * Add to the vocabulary set if (lemma == null || lemma.length() ==
-			 * 0) { lemma = token; }
-			 */
+			/*			String lemma = lemmatizer.lemmatize(token).get(0);
+
+			 Add to the vocabulary set 
+			if (lemma == null || lemma.length() == 0) {
+				lemma = token;
+			}*/
 			tokensList.add(token);
 		}
 
