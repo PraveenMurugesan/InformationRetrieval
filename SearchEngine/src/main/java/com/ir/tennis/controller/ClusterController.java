@@ -20,13 +20,14 @@ public class ClusterController {
 	@RequestMapping("/cluster")
 	public Result run(@RequestParam(value = "kClusterId") Integer kClusterId,
 			@RequestParam(value = "aggClusterId1", required = false) Integer aggClusterId1,
-			@RequestParam(value = "aggClusterId2", required = false) Integer aggClusterId2) {
-		String query = "kClusterId:" + kClusterId;
+			@RequestParam(value = "aggClusterId2", required = false) Integer aggClusterId2, Query query) {
+		String clusterQuery = "kClusterId:" + kClusterId;
 		if (aggClusterId1 != null)
-			query += " AND aggClusterId1:" + aggClusterId1;
+			clusterQuery += " AND aggClusterId1:" + aggClusterId1;
 		else if (aggClusterId2 != null)
-			query += " AND aggClusterId2:" + aggClusterId2;
+			clusterQuery += " AND aggClusterId2:" + aggClusterId2;
 
-		return queryEngine.execute(new Query(query));
+		query.setQuery(query.getQuery() + " AND " + clusterQuery);
+		return queryEngine.execute(query);
 	}
 }

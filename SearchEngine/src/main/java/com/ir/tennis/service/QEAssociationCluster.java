@@ -73,8 +73,6 @@ public class QEAssociationCluster implements QEScheme {
 			docVector.clear();
 		}
 
-		/* TODO: Normalization */
-
 		/* Pick top K neighbors (doc terms) for every query term */
 		StringJoiner expandedQueryBuilder = new StringJoiner(" ");
 		expandedQueryBuilder.add(query.getQuery());

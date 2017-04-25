@@ -57,10 +57,9 @@ public class QueryEngine {
 		solrQuery.setStart(query.getStart());
 		if (query.getRows() > 0)
 			solrQuery.setRows(query.getRows());
+		solrQuery.addSort("score", ORDER.desc);
 		if (query.getOrder() != null)
-			solrQuery.setSort(query.getOrder(), ORDER.desc);
-		else
-			solrQuery.setSort("score", ORDER.desc);
+			solrQuery.addSort(query.getOrder(), ORDER.desc);
 		return solrQuery;
 	}
 }

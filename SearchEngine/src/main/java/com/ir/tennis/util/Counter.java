@@ -27,6 +27,14 @@ public class Counter<K> implements Map<K, Float> {
 		map.merge(key, count, Float::sum);
 	}
 
+	public void subtract(K key) {
+		map.merge(key, -1f, Float::sum);
+	}
+
+	public void subtract(K key, float count) {
+		map.merge(key, -count, Float::sum);
+	}
+
 	public void addAll(Collection<K> c) {
 		for (K key : c)
 			map.merge(key, 1f, Float::sum);
