@@ -9,7 +9,6 @@ var API_RELEVANCE_MODEL_HITS = "query?order=hitScore";
 var API_QUERY_EXPANSION_ROCCHIO = "query?expand=Rocchio";
 var API_QUERY_EXPANSION_ASSOCIATION = "query?expand=AssociationCluster";
 var API_QUERY_EXPANSION_METRIC = "query?expand=MetricCluster";
-var TEST_API="http://localhost:8080/tennis/test.json";
 var BASE_URL = "http://localhost:8080/tennis/";
 
 //models
@@ -30,7 +29,6 @@ $(function () {
     var rows= getParameterByName("rows");
 
     var OFFSET_URL=getOffsetURL(model);
-    //result=getSearchResults(TEST_API, query, 0, 10);
     getSearchResults(BASE_URL+OFFSET_URL, query, start, rows);
 
 });
@@ -43,7 +41,6 @@ function getNextPage(linkElement) {
     var query = getParameterByName("q");
     var model = getParameterByName("model");
     var OFFSET_URL=getOffsetURL(model);
-    //result=getSearchResults(TEST_API, query, start, 10);
     getSearchResults(BASE_URL+OFFSET_URL, query, start, 10);
 }
 
@@ -128,6 +125,7 @@ function generateResult(json) {
             "<li><a href='#' name=kClusterId="+documents[i].kClusterId+"&aggClusterId1="+documents[i].aggClusterId1+" onclick='callClusterAPI(this.name)' class='clusterlink'>similar (complete linkage)</a></li>" +
             "<li><a href='#' name=kClusterId="+documents[i].kClusterId+"&aggClusterId2="+documents[i].aggClusterId2+" onclick='callClusterAPI(this.name)' class='clusterlink'>similar (avg linkage)</a></li>" +
             "</ul></div>";
+        htmlData += "</div>";
         /*
         htmlData += "<div class='clusterLinks'><ul>" +
             "<li><a name=kClusterId=168 onclick='callClusterAPI(this.name)' class='clusterlink'>similar</a></li>" +

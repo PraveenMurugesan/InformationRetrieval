@@ -4,6 +4,7 @@
 
 .entry {
     margin-top: 20px;
+    padding-left: 10px;
 }
 
 .title {
@@ -23,6 +24,7 @@
 
 .stats {
     padding-top: 20px;
+    padding-left: 10px;
     font-size: 12px;
     color: grey;
 }
