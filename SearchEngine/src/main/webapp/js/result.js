@@ -121,9 +121,9 @@ function generateResult(json) {
         //htmlData += "<div><a class='dropdown-toggle' data-toggle='dropdown' class='url'>"+documents[i].url+"<span class='caret'></span></a><ul class='dropdown-menu'><li><a href='#' name='similar'>similar</a></li><li><a href='#' name='moresimilar'>More similar</a></li></ul></div>";
         htmlData += "<div class='snippet'>"+ getContent(documents[i].content)+"...</div>";
         htmlData += "<div class='clusterLinks'><ul>" +
-            "<li><a class='clusterlink' name=kClusterId="+documents[i].kClusterId+" onclick='callClusterAPI(this.name)' >similar</a></li>" +
-            "<li><a name=kClusterId="+documents[i].kClusterId+"&aggClusterId1="+documents[i].aggClusterId1+" onclick='callClusterAPI(this.name)' class='clusterlink'>complete linkage</a></li>" +
-            "<li><a name=kClusterId="+documents[i].kClusterId+"&aggClusterId2="+documents[i].aggClusterId2+" onclick='callClusterAPI(this.name)' class='clusterlink'>avg linkage</a></li>" +
+            "<li><a href='' class='clusterlink' name=kClusterId="+documents[i].kClusterId+" onclick='callClusterAPI(this.name)' >similar</a></li>" +
+            "<li><a href='' name=kClusterId="+documents[i].kClusterId+"&aggClusterId1="+documents[i].aggClusterId1+" onclick='callClusterAPI(this.name)' class='clusterlink'>complete linkage</a></li>" +
+            "<li><a href='' name=kClusterId="+documents[i].kClusterId+"&aggClusterId2="+documents[i].aggClusterId2+" onclick='callClusterAPI(this.name)' class='clusterlink'>avg linkage</a></li>" +
             "</ul></div>";
         /*
         htmlData += "<div class='clusterLinks'><ul>" +

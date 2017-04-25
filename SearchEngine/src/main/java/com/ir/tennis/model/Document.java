@@ -17,9 +17,9 @@ public class Document {
 		this.title = (String) document.get("title");
 		this.url = (String) document.get("url");
 		this.content = (String) document.get("content");
-		this.kClusterId = (int) document.get("kClusterId");
-		this.aggClusterId1 = (int) document.get("aggClusterId1");
-		this.aggClusterId2 = (int) document.get("aggClusterId2");
+		this.kClusterId = document.get("kClusterId") != null ? (int) document.get("kClusterId") : 0;
+		this.aggClusterId1 = document.get("aggClusterId1") != null ? (int) document.get("aggClusterId1") : 0;
+		this.aggClusterId2 = document.get("aggClusterId1") != null ? (int) document.get("aggClusterId2") : 0;
 	}
 
 	public String getTitle() {
