@@ -177,6 +177,7 @@ function getOptions(query, start, count) {
 
 function getSearchResults(url, query, start, count) {
 
+    $("#img-load").show();
     var queryString = url + getOptions(query, start, count);
     var encodedQueryString=encodeURI(queryString);
     console.log(encodedQueryString);
@@ -209,16 +210,23 @@ function getParameterByName(name) {
 
 function generateResultPage(start, result) {
 
+    var htmlData="";
     if(result != null && result != undefined && result.documents.length > 0) {
         
         //console.log(result);
         var resultEntries = generateResult(result);
         var footer = generateFooter(start, 10);
-        document.getElementById("customSearch").innerHTML = resultEntries + footer;
+        //document.getElementById("customSearch").innerHTML = resultEntries + footer;
+        htmlData = resultEntries + footer;
+
     }
     else {
 
-        document.getElementById("customSearch").innerHTML = "<html><p>Your search did not match any documents.</p> Suggestions: <ul><li>Make sure all words are spelled correctly.</li><li>Try different keywords.</li></ul></html>";
+        //document.getElementById("customSearch").innerHTML = "<html><p>Your search did not match any documents.</p> Suggestions: <ul><li>Make sure all words are spelled correctly.</li><li>Try different keywords.</li></ul></html>";
+        htmlData = "<html><p>Your search did not match any documents.</p> Suggestions: <ul><li>Make sure all words are spelled correctly.</li><li>Try different keywords.</li></ul></html>";
     }
+
+    document.getElementById("customSearch").innerHTML = htmlData;
+    $("#img-load").hide();
 
 }
