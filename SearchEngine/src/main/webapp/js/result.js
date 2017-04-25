@@ -6,9 +6,9 @@ var API_CLUSTER = "cluster?";
 var API_RELEVANCE_MODEL_SCORE = "query?order=score";
 var API_RELEVANCE_MODEL_PAGERANK = "query?order=rankScore";
 var API_RELEVANCE_MODEL_HITS = "query?order=hitScore";
-var API_QUERY_EXPANSION_ROCCHIO = "query?scheme=Rocchio";
-var API_QUERY_EXPANSION_ASSOCIATION = "query?scheme=AssociationCluster";
-var API_QUERY_EXPANSION_METRIC = "query?scheme=MetricCluster";
+var API_QUERY_EXPANSION_ROCCHIO = "query?expand=Rocchio";
+var API_QUERY_EXPANSION_ASSOCIATION = "query?expand=AssociationCluster";
+var API_QUERY_EXPANSION_METRIC = "query?expand=MetricCluster";
 var TEST_API="http://localhost:8080/tennis/test.json";
 var BASE_URL = "http://localhost:8080/tennis/";
 
@@ -35,8 +35,11 @@ $(function () {
 
 });
 
-function getNextPage(start) {
+function getNextPage(linkElement) {
 
+    REQUEST_TIME=(new Date()).getTime();
+    //linkElement.preventDefault();
+    var start=linkElement.name;
     var query = getParameterByName("q");
     var model = getParameterByName("model");
     var OFFSET_URL=getOffsetURL(model);
@@ -83,12 +86,12 @@ function generateLabels(query) {
 
     var tokens = query.split(" ");
     console.log(tokens);
-    var htmlData = "<ul id='labels'>";
+    var htmlData = "<div class='row'><ul id='labels'>";
     for( var index in tokens) {
         htmlData += "<li><h4><span class='label label-info'>"+tokens[index]+"</span></h4></li>";
     }
 
-    htmlData += "</ul><br/>";
+    htmlData += "</ul></div>";
     return htmlData;
 }
 
@@ -105,7 +108,7 @@ function generateResult(json) {
 
     RESPONSE_TIME=(new Date()).getTime();
     var htmlData = "";
-    htmlData += "<div class='container' id='results'>";
+    htmlData += "<div id='results'>";
     htmlData += "<div class='stats'>About "+json.matches+" results ("+((RESPONSE_TIME - REQUEST_TIME)/1000)+" seconds)</div>";
 
     if(json.expandedQuery != undefined || json.expandedQuery != null) {
@@ -121,9 +124,9 @@ function generateResult(json) {
         //htmlData += "<div><a class='dropdown-toggle' data-toggle='dropdown' class='url'>"+documents[i].url+"<span class='caret'></span></a><ul class='dropdown-menu'><li><a href='#' name='similar'>similar</a></li><li><a href='#' name='moresimilar'>More similar</a></li></ul></div>";
         htmlData += "<div class='snippet'>"+ getContent(documents[i].content)+"...</div>";
         htmlData += "<div class='clusterLinks'><ul>" +
-            "<li><a href='' class='clusterlink' name=kClusterId="+documents[i].kClusterId+" onclick='callClusterAPI(this.name)' >similar</a></li>" +
-            "<li><a href='' name=kClusterId="+documents[i].kClusterId+"&aggClusterId1="+documents[i].aggClusterId1+" onclick='callClusterAPI(this.name)' class='clusterlink'>complete linkage</a></li>" +
-            "<li><a href='' name=kClusterId="+documents[i].kClusterId+"&aggClusterId2="+documents[i].aggClusterId2+" onclick='callClusterAPI(this.name)' class='clusterlink'>avg linkage</a></li>" +
+            "<li><a href='#' class='clusterlink' name=kClusterId="+documents[i].kClusterId+" onclick='callClusterAPI(this.name)' >similar</a></li>" +
+            "<li><a href='#' name=kClusterId="+documents[i].kClusterId+"&aggClusterId1="+documents[i].aggClusterId1+" onclick='callClusterAPI(this.name)' class='clusterlink'>similar (complete linkage)</a></li>" +
+            "<li><a href='#' name=kClusterId="+documents[i].kClusterId+"&aggClusterId2="+documents[i].aggClusterId2+" onclick='callClusterAPI(this.name)' class='clusterlink'>similar (avg linkage)</a></li>" +
             "</ul></div>";
         /*
         htmlData += "<div class='clusterLinks'><ul>" +
@@ -151,14 +154,14 @@ function generateFooter(start, count) {
         //prevLink="<li><a name="+start+" class='previous' style='pointer-events: none; cursor:default; float: left'> Prev </a></li>";
     }
     else {
-        prevLink="<li><a name="+(parseInt(start, 10)-10)+"  href='' class='previous' onclick='getNextPage(this.name)' style='float: left'> Prev</a></li>";
+        prevLink="<li><a name="+(parseInt(start, 10)-10)+"  href='#' class='previous' onclick='getNextPage(this)' style='float: left'> Prev</a></li>";
     }
 
     if(count < 10) {
         //nextLink="<li><a name="+(start+10)+" class='next'  style='pointer-events: none; cursor:default; float: right'> Next </a></li>";
     }
     else {
-        nextLink="<li><a name="+(parseInt(start, 10)+10)+" href='' class='next' onclick='getNextPage(this.name)' style='float: right;'> Next</a></li>";
+        nextLink="<li><a name="+(parseInt(start, 10)+10)+" href='#' class='next' onclick='getNextPage(this)' style='float: right;'> Next</a></li>";
     }
 
     htmlData += prevLink+nextLink;
@@ -174,16 +177,21 @@ function getOptions(query, start, count) {
 
 function getSearchResults(url, query, start, count) {
 
-    console.log(url + getOptions(query, start, count));
     var queryString = url + getOptions(query, start, count);
+    var encodedQueryString=encodeURI(queryString);
+    console.log(encodedQueryString);
 
     $.ajax({
         async: true,
         type: "GET",
-        url: queryString,
+        url: encodedQueryString,
         dataType: "json",
         success: function (data) {
-            generateResultPage(start+count, data);
+            generateResultPage(start, data);
+        },
+        error: function(d) {
+            console.log("Http Request Failed");
+            document.getElementById("customSearch").innerHTML = "<html><p>Your search did not match any documents.</p> Suggestions: <ul><li>Make sure all words are spelled correctly.</li><li>Try different keywords.</li></ul></html>";
         }
     });
 }
@@ -191,7 +199,6 @@ function getSearchResults(url, query, start, count) {
 function getParameterByName(name) {
 
     var url = window.location.href;
-    console.log(url);
     name = name.replace(/[\[\]]/g, "\\$&");
     var regex = new RegExp("[?&]" + name + "(=([^&#]*)|&|#|$)"),
         results = regex.exec(url);
@@ -203,7 +210,8 @@ function getParameterByName(name) {
 function generateResultPage(start, result) {
 
     if(result != null && result != undefined && result.documents.length > 0) {
-        console.log(result);
+        
+        //console.log(result);
         var resultEntries = generateResult(result);
         var footer = generateFooter(start, 10);
         document.getElementById("customSearch").innerHTML = resultEntries + footer;

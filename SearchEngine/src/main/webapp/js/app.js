@@ -10,16 +10,20 @@ var CUSTOM_PAGE_DEFAULT_MODEL="score";
 
 $(function () {
 
-    var model=$("#model").text();
+    var modelText=$("#model").text();
+    var model=$("#model").val();
     if(model == undefined || model == "" || model == null) {
-        $("#model").text(CUSTOM_PAGE_DEFAULT_MODEL);
+        $("#model").text("Score");
+        $("#model").val(CUSTOM_PAGE_DEFAULT_MODEL);
     }
 
     $("#customMenu").on('click', 'a', function () {
 
         var model=this.name;
+        var modelText=this.text;
         if(model != undefined && model != "") {
-            $("#model").text(model);
+            $("#model").text(modelText);
+            $("#model").val(model);
             loadCustomSearchPage(model);
         }
     });
@@ -35,7 +39,7 @@ function loadResults() {
         loadGooglePage();
     }
 
-    loadCustomSearchPage($("#model").text());
+    loadCustomSearchPage($("#model").val());
 
 }
 
