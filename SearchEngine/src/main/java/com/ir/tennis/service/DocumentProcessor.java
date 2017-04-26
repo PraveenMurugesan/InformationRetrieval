@@ -20,6 +20,8 @@ public class DocumentProcessor {
 
 	public List<String> getTokens(String content) {
 		List<String> tokensList = new ArrayList<>();
+		if (content == null)
+			return tokensList;
 
 		/*
 		 * Remove all the '. ' at the end of the line and replace it with space
@@ -66,12 +68,12 @@ public class DocumentProcessor {
 				continue;
 
 			/* Lemmatize the token */
-			/*			String lemma = lemmatizer.lemmatize(token).get(0);
-
-			 Add to the vocabulary set 
-			if (lemma == null || lemma.length() == 0) {
-				lemma = token;
-			}*/
+			/*
+			 * String lemma = lemmatizer.lemmatize(token).get(0);
+			 * 
+			 * Add to the vocabulary set if (lemma == null || lemma.length() ==
+			 * 0) { lemma = token; }
+			 */
 			tokensList.add(token);
 		}
 

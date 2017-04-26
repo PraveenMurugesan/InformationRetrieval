@@ -57,9 +57,12 @@ public class QueryEngine {
 		solrQuery.setStart(query.getStart());
 		if (query.getRows() > 0)
 			solrQuery.setRows(query.getRows());
-		solrQuery.addSort("score", ORDER.desc);
-		if (query.getOrder() != null)
-			solrQuery.addSort(query.getOrder(), ORDER.desc);
+		if ("rankScore".equals(query.getOrder()))
+			solrQuery.setQuery(query.getQuery() + " atp");
+		else if ("hitScore".equals(query.getOrder()))
+			solrQuery.setQuery(query.getQuery() + " wiki");
+		System.out.println(solrQuery);
+		solrQuery.setSort("score", ORDER.desc);
 		return solrQuery;
 	}
 }
