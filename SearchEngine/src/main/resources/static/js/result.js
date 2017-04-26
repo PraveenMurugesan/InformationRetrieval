@@ -35,7 +35,6 @@ $(function () {
 
 function getNextPage(linkElement) {
 
-    REQUEST_TIME=(new Date()).getTime();
     //linkElement.preventDefault();
     var start=linkElement.name;
     var query = getParameterByName("q");
@@ -113,26 +112,39 @@ function generateResult(json) {
     }
 
     var documents = json.documents;
+    
     for(i=0; i<documents.length; i++) {
-        htmlData += "<div class='entry'>";
-        htmlData += "<div><a class='title' href="+documents[i].url+">"+documents[i].title+"</a></div>";
-        //htmlData += "<div class='url'>"+documents[i].url+"</div>";
-        htmlData += "<div class='url'>"+documents[i].url+"</div>";
-        //htmlData += "<div><a class='dropdown-toggle' data-toggle='dropdown' class='url'>"+documents[i].url+"<span class='caret'></span></a><ul class='dropdown-menu'><li><a href='#' name='similar'>similar</a></li><li><a href='#' name='moresimilar'>More similar</a></li></ul></div>";
-        htmlData += "<div class='snippet'>"+ getContent(documents[i].content)+"...</div>";
-        htmlData += "<div class='clusterLinks'><ul>" +
-            "<li><a href='#' class='clusterlink' name=kClusterId="+documents[i].kClusterId+" onclick='callClusterAPI(this.name)' >similar</a></li>" +
-            "<li><a href='#' name=kClusterId="+documents[i].kClusterId+"&aggClusterId1="+documents[i].aggClusterId1+" onclick='callClusterAPI(this.name)' class='clusterlink'>similar (complete linkage)</a></li>" +
-            "<li><a href='#' name=kClusterId="+documents[i].kClusterId+"&aggClusterId2="+documents[i].aggClusterId2+" onclick='callClusterAPI(this.name)' class='clusterlink'>similar (avg linkage)</a></li>" +
-            "</ul></div>";
-        htmlData += "</div>";
-        /*
-        htmlData += "<div class='clusterLinks'><ul>" +
-            "<li><a name=kClusterId=168 onclick='callClusterAPI(this.name)' class='clusterlink'>similar</a></li>" +
-            "<li><a name=kClusterId=168&aggClusterId1="+documents[i].aggClusterId1+" onclick='callClusterAPI(this.name)' class='clusterlink'>more similar (complete link)</a></li>" +
-            "<li><a name=kClusterId=168&aggClusterId2="+documents[i].aggClusterId2+" onclick='callClusterAPI(this.name)' class='clusterlink'>more similar (avg link)</a></li>" +
-            "</ul></div>";
-        htmlData += "</div>"; */
+
+        if((documents[i].title == undefined || documents[i].title == null) &&  (documents[i].url == undefined || documents[i].url == null) ) {
+            
+            continue;
+        }
+
+        //if((documents[i].title == undefined || documents[i].title == null) && (documents[i].url != undefined && documents[i].url != null) ) {
+                        
+            htmlData += "<div class='entry'>";
+            if(documents[i].title == undefined || documents[i].title == null) {
+
+                htmlData += "<div><a class='title' href="+documents[i].url+" target='_blank'>"+documents[i].url+"</a></div>";
+            }
+            else {
+
+                htmlData += "<div><a class='title' href="+documents[i].url+" target='_blank'>"+documents[i].title+"</a></div>";   
+            }
+            //htmlData += "<div class='url'>"+documents[i].url+"</div>";
+            htmlData += "<div class='url'>"+documents[i].url+"</div>";
+            //htmlData += "<div><a class='dropdown-toggle' data-toggle='dropdown' class='url'>"+documents[i].url+"<span class='caret'></span></a><ul class='dropdown-menu'><li><a href='#' name='similar'>similar</a></li><li><a href='#' name='moresimilar'>More similar</a></li></ul></div>";
+            htmlData += "<div class='snippet'>"+ getContent(documents[i].content)+"...</div>";
+            htmlData += "<div class='clusterLinks'><ul>" +
+                "<li><a href='#' class='clusterlink' name=kClusterId="+documents[i].kClusterId+" onclick='callClusterAPI(this.name)' >similar</a></li>" +
+                "<li><a href='#' name=kClusterId="+documents[i].kClusterId+"&aggClusterId1="+documents[i].aggClusterId1+" onclick='callClusterAPI(this.name)' class='clusterlink'>similar (complete linkage)</a></li>" +
+                "<li><a href='#' name=kClusterId="+documents[i].kClusterId+"&aggClusterId2="+documents[i].aggClusterId2+" onclick='callClusterAPI(this.name)' class='clusterlink'>similar (avg linkage)</a></li>" +
+                "</ul></div>";
+            htmlData += "</div>";
+        //}
+        /*else {
+            htmlData += "<div style='margin-bottom: 20px;'><img src="+documents[i].url+" width='30%' height='30%' style='float: left' /></div>";
+        }*/
     }
     htmlData += "</div>";
 
@@ -176,6 +188,7 @@ function getOptions(query, start, count) {
 function getSearchResults(url, query, start, count) {
 
     $("#img-load").show();
+    REQUEST_TIME=(new Date()).getTime();
     var queryString = url + getOptions(query, start, count);
     var encodedQueryString=encodeURI(queryString);
     console.log(encodedQueryString);
