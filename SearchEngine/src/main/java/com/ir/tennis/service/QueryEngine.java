@@ -61,7 +61,6 @@ public class QueryEngine {
 			solrQuery.setQuery(query.getQuery() + " atp");
 		else if ("hitScore".equals(query.getOrder()))
 			solrQuery.setQuery(query.getQuery() + " wiki");
-		System.out.println(solrQuery);
 		solrQuery.setSort("score", ORDER.desc);
 		return solrQuery;
 	}
