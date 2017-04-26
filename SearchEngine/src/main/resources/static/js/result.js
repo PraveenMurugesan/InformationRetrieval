@@ -191,6 +191,7 @@ function getSearchResults(url, query, start, count) {
         error: function(d) {
             console.log("Http Request Failed");
             document.getElementById("customSearch").innerHTML = "<html><p>Your search did not match any documents.</p> Suggestions: <ul><li>Make sure all words are spelled correctly.</li><li>Try different keywords.</li></ul></html>";
+            $("#img-load").hide();
         }
     });
 }
