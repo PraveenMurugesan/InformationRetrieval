@@ -52,16 +52,12 @@ public class QueryEngine {
 
 	private SolrQuery _getSolrQuery(Query query) {
 		SolrQuery solrQuery = new SolrQuery();
-		solrQuery.setQuery(query.getQuery());
+		solrQuery.setQuery(query.getQuery() + " title:\"" + query.getQuery() + "\"");
 		solrQuery.setParam("fl", "title,url,content,kClusterId,aggClusterId1,aggClusterId2");
 		solrQuery.setStart(query.getStart());
 		if (query.getRows() > 0)
 			solrQuery.setRows(query.getRows());
-		if ("rankScore".equals(query.getOrder()))
-			solrQuery.setQuery(query.getQuery() + " atp");
-		else if ("hitScore".equals(query.getOrder()))
-			solrQuery.setQuery(query.getQuery() + " wiki");
-		solrQuery.setSort("score", ORDER.desc);
+		solrQuery.setSort(query.getOrder(), ORDER.desc);
 		return solrQuery;
 	}
 }
